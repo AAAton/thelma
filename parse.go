@@ -7,10 +7,21 @@ import (
 	"strings"
 
 	"gopkg.in/mgo.v2"
-	"gopkg.in/mgo.v2/bson"
 )
 
+/*
 func main() {
+
+	if true {
+		f, err := os.Create("profile.prof")
+		if err != nil {
+			panic(err)
+		}
+		fmt.Println("Profiling enabled")
+		pprof.StartCPUProfile(f)
+		defer pprof.StopCPUProfile()
+	}
+
 	tokens := Tokenize("Selma.txt")
 	tokenCount := make(map[string]int)
 	session := GetSession()
@@ -37,10 +48,10 @@ func main() {
 	/*err := c.Insert(bson.M{"token": token, "count": 0})
 	if err != nil {
 		c.Update(bson.M{"token": token}, bson.M{"$inc": bson.M{"count": 1}})
-	}*/
+	}
 
 }
-
+*/
 //Tokenize splits text file into tokens
 func Tokenize(filename string) []string {
 	dat, _ := ioutil.ReadFile(filename)
