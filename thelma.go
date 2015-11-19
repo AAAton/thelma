@@ -3,8 +3,10 @@ package main
 import (
 	"flag"
 	"fmt"
+	"io/ioutil"
 	"os"
 	"os/exec"
+	"strings"
 )
 
 var filename string
@@ -63,4 +65,20 @@ func cleanUpSymbols(originalFile string) string {
 
 func tagCharactersInTextFile(filename string, characterCount map[string]int) {
 	//TODO tag original textfile
+	dat, _ := ioutil.ReadFile(filename)
+	filecontents := string(dat)
+	for character, count := range characterCount {
+		if count > 4 {
+			taggedCharacter := tagCharacter(character)
+			filecontents = strings.Replace(filecontents, character, taggedCharacter, -1)
+		}
+	}
+	newFilename := strings.Replace(filename, ".", "_tagged.", 1)
+	ioutil.WriteFile(newFilename, []byte(filecontents), 0777)
+}
+
+func tagCharacter(character string) string {
+	class := strings.ToLower(character)
+	class = strings.Replace(class, " ", "_", -1)
+	return "<span class=" + class + ">" + character + "</span>"
 }
