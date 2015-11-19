@@ -10,14 +10,14 @@ import (
 
 var personMap, placeMap, instMap map[string]int
 
-func main() {
+func namedEntityImprover(filename string) {
 	var persons, places, insts string
 
 	personMap = make(map[string]int)
 	placeMap = make(map[string]int)
 	instMap = make(map[string]int)
 
-	dat, err := ioutil.ReadFile("Selma.conll")
+	dat, err := ioutil.ReadFile(filename)
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -66,14 +66,7 @@ func main() {
 		placeList += place + "\t" + strconv.Itoa(count) + "\n"
 	}
 
-	fmt.Println("Writing files")
-	ioutil.WriteFile("persons.conll", []byte(persons), 0777)
-	ioutil.WriteFile("places.conll", []byte(places), 0777)
-	ioutil.WriteFile("insts.conll", []byte(insts), 0777)
-	ioutil.WriteFile("characterCount.conll", []byte(personList), 0777)
-	ioutil.WriteFile("placeCount.conll", []byte(placeList), 0777)
-
-	correctSelma(rows)
+	correctSelma(filename, rows)
 }
 
 func addToMap(namedMap map[string]int, row string) {
@@ -83,11 +76,11 @@ func addToMap(namedMap map[string]int, row string) {
 	}
 }
 
-func correctSelma(rows []string) {
+func correctSelma(filename string, rows []string) {
 
 	fmt.Println("Correcting Selma")
 
-	ioutil.WriteFile("NewSelma.conll", []byte(""), 0777)
+	ioutil.WriteFile(filename, []byte(""), 0777)
 	var lastPrint int
 	var fileString string
 	for index, row := range rows {
@@ -123,11 +116,11 @@ func correctSelma(rows []string) {
 		if index/10000 > lastPrint {
 			lastPrint = index / 10000
 			fmt.Println(index)
-			append(fileString, "NewSelma.conll")
+			append(fileString, filename)
 			fileString = ""
 		}
 	}
-	append(fileString, "NewSelma.conll")
+	append(fileString, filename)
 }
 
 func append(text, filename string) {
