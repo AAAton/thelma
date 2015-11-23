@@ -1,0 +1,1 @@
+java -jar stagger.jar -modelfile models/swedish.bin -tag literature/jerusalem.txt > output/conll//jerusalem.conll

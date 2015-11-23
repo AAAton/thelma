@@ -42,5 +42,5 @@ func printCharacters(characterCount map[string]int) {
 		}
 	}
 
-	ioutil.WriteFile("output/characters.txt", []byte(characterList), 0777)
+	ioutil.WriteFile("output/"+getStoryName(filename)+"_characters.txt", []byte(characterList), 0777)
 }

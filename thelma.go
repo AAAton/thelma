@@ -6,15 +6,15 @@ import (
 	"io/ioutil"
 	"os"
 	"os/exec"
+	"regexp"
 	"strings"
 )
 
-var filename string
-var conllFile string
+var filename, conllFile string
 
 func init() {
 	flag.StringVar(&filename, "f", "", "help message for flagname")
-	flag.StringVar(&conllFile, "c", "", "help message for conll")
+	flag.StringVar(&conllFile, "c", "", "help message for flagname")
 	flag.Parse()
 }
 
@@ -24,17 +24,14 @@ func main() {
 		fmt.Println("You need to set filename with -f flag")
 		os.Exit(0)
 	}
-	if conllFile == "" {
-		fmt.Println("You need to set conllFilename with -c flag")
-		os.Exit(0)
-	}
 
 	filename = cleanUpSymbols(filename)
 
-	//conllFile := stagger(filename)
+	if conllFile == "" {
+		conllFile = stagger(filename)
 
-	namedEntityImprover(conllFile)
-
+		namedEntityImprover(conllFile)
+	}
 	characterCount := findCharacterNames(conllFile)
 
 	printCharacters(characterCount)
@@ -44,11 +41,14 @@ func main() {
 }
 
 func stagger(filename string) string {
-	//TODO create conll file with stagger
-	conllFilename := "tmp.conll"
-	cmd := "java -jar stagger.jar -modelfile models/swedish.bin > output/" + conllFilename
-	err := exec.Command(cmd).Run()
+	fmt.Println("Running stagger...")
 
+	conllFilename := "output/conll/" + getStoryName(filename) + ".conll"
+	print := "java -jar stagger.jar -modelfile models/swedish.bin -tag " + filename + " > " + conllFilename
+	ioutil.WriteFile("runStagger.sh", []byte(print), 0777)
+
+	cmd := exec.Command("/bin/sh", "runStagger.sh")
+	err := cmd.Run()
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(0)
@@ -64,21 +64,53 @@ func cleanUpSymbols(originalFile string) string {
 }
 
 func tagCharactersInTextFile(filename string, characterCount map[string]int) {
-	//TODO tag original textfile
-	dat, _ := ioutil.ReadFile(filename)
-	filecontents := string(dat)
-	for character, count := range characterCount {
-		if count > 4 {
-			taggedCharacter := tagCharacter(character)
-			filecontents = strings.Replace(filecontents, character, taggedCharacter, -1)
+	fmt.Println("tagging characters in txt file")
+	filecontents, _ := ioutil.ReadFile(filename)
+
+	nonLetter := "\\P{L}"
+	sortedCharacters := sortCharacters(characterCount)
+	replacements := 0
+
+	for _, character := range sortedCharacters {
+
+		taggedCharacter := tagCharacter(character)
+
+		r, _ := regexp.Compile(nonLetter + character + nonLetter)
+		indexes := r.FindAllIndex(filecontents, -1)
+		if indexes != nil {
+			for i := len(indexes) - 1; i >= 0; i-- {
+				ending := append([]byte(taggedCharacter), filecontents[indexes[i][1]-1:]...)
+				filecontents = append(filecontents[:indexes[i][0]+1], ending...)
+				replacements++
+			}
 		}
 	}
-	newFilename := strings.Replace(filename, ".", "_tagged.", 1)
-	ioutil.WriteFile(newFilename, []byte(filecontents), 0777)
+
+	taggedFile := "output/" + getStoryName(filename) + "_tagged.txt"
+	ioutil.WriteFile(taggedFile, []byte(filecontents), 0777)
+	fmt.Println("Made", replacements, "replacements to", taggedFile)
 }
 
 func tagCharacter(character string) string {
 	class := strings.ToLower(character)
 	class = strings.Replace(class, " ", "_", -1)
-	return "<span class=" + class + ">" + character + "</span>"
+	return "<span class=\"" + class + "\">" + character + "</span>"
+}
+
+func sortCharacters(characterCount map[string]int) []string {
+	var characters []string
+	for character, count := range characterCount {
+		if count > 4 {
+			characters = append(characters, character)
+		}
+	}
+
+	return QuickSort(characters)
+}
+
+func getStoryName(filename string) string {
+	storyName := strings.Replace(filename, ".txt", "", -1)
+	indexOfSlash := strings.Index(storyName, "/")
+	storyName = string([]byte(storyName)[indexOfSlash:])
+	return storyName
 }

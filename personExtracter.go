@@ -53,13 +53,10 @@ func namedEntityImprover(filename string) {
 		}
 	}
 
-	fmt.Println("Creating list of characters")
 	var personList string
 	for person, count := range personMap {
 		personList += person + "\t" + strconv.Itoa(count) + "\n"
 	}
-
-	fmt.Println("Creating list of places")
 
 	var placeList string
 	for place, count := range placeMap {
@@ -116,14 +113,14 @@ func correctSelma(filename string, rows []string) {
 		if index/10000 > lastPrint {
 			lastPrint = index / 10000
 			fmt.Println(index)
-			append(fileString, filename)
+			appendText(fileString, filename)
 			fileString = ""
 		}
 	}
-	append(fileString, filename)
+	appendText(fileString, filename)
 }
 
-func append(text, filename string) {
+func appendText(text, filename string) {
 	f, err := os.OpenFile(filename, os.O_APPEND|os.O_WRONLY, 0777)
 	if err != nil {
 		panic(err)
