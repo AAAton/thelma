@@ -87,7 +87,7 @@ func tagCharactersInTextFile(filename string, characterCount map[string]int) {
 		}
 	}
 
-	taggedFile := "output/" + getStoryName(filename) + "_tagged.txt"
+	taggedFile := "output/" + getStoryName(filename) + "_tagged.html"
 	ioutil.WriteFile(taggedFile, []byte(filecontents), 0777)
 	fmt.Println("Made", replacements, "replacements to", taggedFile)
 }

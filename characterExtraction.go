@@ -39,10 +39,10 @@ func printCharacters(characterCount map[string]int) {
 	for name, count := range characterCount {
 		if isCharacter(name, count) {
 			characterCountString += name + "\t" + strconv.Itoa(count) + "\n"
-			characterList += "<span class=\"" + characterClassName(name) + "\">" + name + "</span>\n"
+			characterList += characterClassName(name) + "\n"
 		}
 	}
 
-	ioutil.WriteFile("output/"+getStoryName(filename)+"_characters.txt", []byte(characterList), 0777)
+	ioutil.WriteFile("output/"+getStoryName(filename)+"_characters.html", []byte(characterList), 0777)
 	ioutil.WriteFile("output/"+getStoryName(filename)+"_character_count.txt", []byte(characterCountString), 0777)
 }
