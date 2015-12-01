@@ -35,12 +35,14 @@ func findCharacterNames(filename string) map[string]int {
 }
 
 func printCharacters(characterCount map[string]int) {
-	var characterList string
+	var characterCountString, characterList string
 	for name, count := range characterCount {
-		if count > 4 {
-			characterList += name + "\t" + strconv.Itoa(count) + "\n"
+		if isCharacter(name, count) {
+			characterCountString += name + "\t" + strconv.Itoa(count) + "\n"
+			characterList += "<span class=\"" + characterClassName(name) + "\">" + name + "</span>\n"
 		}
 	}
 
 	ioutil.WriteFile("output/"+getStoryName(filename)+"_characters.txt", []byte(characterList), 0777)
+	ioutil.WriteFile("output/"+getStoryName(filename)+"_character_count.txt", []byte(characterCountString), 0777)
 }

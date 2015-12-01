@@ -1,3 +1,4 @@
 parse
 models/swedish.bin
 output/conll
+output/*

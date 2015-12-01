@@ -1,4 +1,4 @@
-package main
+package qsort
 
 import "math/rand"
 

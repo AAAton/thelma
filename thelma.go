@@ -8,6 +8,7 @@ import (
 	"os/exec"
 	"regexp"
 	"strings"
+	"thelma/qsort"
 )
 
 var filename, conllFile string
@@ -73,7 +74,7 @@ func tagCharactersInTextFile(filename string, characterCount map[string]int) {
 
 	for _, character := range sortedCharacters {
 
-		taggedCharacter := tagCharacter(character)
+		taggedCharacter := characterClassName(character)
 
 		r, _ := regexp.Compile(nonLetter + character + nonLetter)
 		indexes := r.FindAllIndex(filecontents, -1)
@@ -91,7 +92,7 @@ func tagCharactersInTextFile(filename string, characterCount map[string]int) {
 	fmt.Println("Made", replacements, "replacements to", taggedFile)
 }
 
-func tagCharacter(character string) string {
+func characterClassName(character string) string {
 	class := strings.ToLower(character)
 	class = strings.Replace(class, " ", "_", -1)
 	return "<span class=\"" + class + "\">" + character + "</span>"
@@ -100,12 +101,12 @@ func tagCharacter(character string) string {
 func sortCharacters(characterCount map[string]int) []string {
 	var characters []string
 	for character, count := range characterCount {
-		if count > 4 {
+		if isCharacter(character, count) {
 			characters = append(characters, character)
 		}
 	}
 
-	return QuickSort(characters)
+	return qsort.QuickSort(characters)
 }
 
 func getStoryName(filename string) string {
@@ -113,4 +114,8 @@ func getStoryName(filename string) string {
 	indexOfSlash := strings.Index(storyName, "/")
 	storyName = string([]byte(storyName)[indexOfSlash:])
 	return storyName
+}
+
+func isCharacter(character string, count int) bool {
+	return count > 4 && len(character) > 1
 }
