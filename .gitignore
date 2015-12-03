@@ -1,3 +1,4 @@
 parse
 models/swedish.bin
 *.conll
+thelma
