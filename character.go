@@ -1,6 +1,7 @@
 package main
 
 import (
+	"regexp"
 	"strconv"
 	"strings"
 )
@@ -11,6 +12,7 @@ type Character struct {
 	Name      string
 	Count     int
 	LinkedIDs []int
+	regex     *regexp.Regexp
 }
 
 func (c Character) toString() string {
@@ -31,19 +33,27 @@ func (c Character) equals(c2 Character) bool {
 }
 
 func (c Character) isLinkedTo(c2 Character) bool {
+
+	if c.equals(c2) {
+		return true
+	}
+
 	for _, id := range c.LinkedIDs {
-		for _, id2 := range c2.LinkedIDs {
-			if id == id2 {
-				return true
-			}
+		if c2.ID == id {
+			return true
+		}
+	}
+	for _, id := range c2.LinkedIDs {
+		if c.ID == id {
+			return true
 		}
 	}
 	return false
 }
 
-func link(c, c2 Character) {
+func link(c, c2 *Character) {
 	c.LinkedIDs = append(c.LinkedIDs, c2.ID)
-	c2.LinkedIDs = append(c2.LinkedIDs, c2.ID)
+	c2.LinkedIDs = append(c2.LinkedIDs, c.ID)
 }
 
 func (c Character) isSimilarTo(c2 Character) bool {
@@ -53,8 +63,8 @@ func (c Character) isSimilarTo(c2 Character) bool {
 		return false
 	}
 
-	//One name is a substring of the other
-	if strings.Contains(c.Name, c2.Name) || strings.Contains(c2.Name, c.Name) {
+	//One name is a part of the other name
+	if c.regex.MatchString(" " + c2.Name + " ") {
 		return true
 	}
 
@@ -62,22 +72,19 @@ func (c Character) isSimilarTo(c2 Character) bool {
 	if strings.HasSuffix(c.Name, "s") && c.Name[:len(c.Name)-2] == c2.Name {
 		return true
 	}
-	if strings.HasSuffix(c2.Name, "s") && c2.Name[:len(c2.Name)-2] == c.Name {
-		return true
-	}
 
 	return false
 }
 
-func (c Character) propegateLink(characters Characters, originalChar Character) {
+func (c Character) propegateLink(characters Characters, originalChar *Character) {
 
-	if !c.isLinkedTo(originalChar) {
-		link(c, originalChar)
+	if !c.isLinkedTo(*originalChar) {
+		link(&c, originalChar)
 	}
 
 	for _, ID := range c.LinkedIDs {
 		linkedChar := characters.get(ID)
-		if !linkedChar.isLinkedTo(originalChar) {
+		if !linkedChar.isLinkedTo(*originalChar) {
 			linkedChar.propegateLink(characters, originalChar)
 		}
 	}
