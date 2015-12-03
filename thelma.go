@@ -33,7 +33,11 @@ func main() {
 
 		namedEntityImprover(conllFile)
 	}
-	characterCount := findCharacterNames(conllFile)
+	characterCount := findFullCharacterNames(conllFile)
+
+	characters := createCharacterListFromMap(characterCount)
+	characters.linkAliases()
+	characters.print("output/characters/" + getStoryName(filename) + ".html")
 
 	printCharacters(characterCount)
 
@@ -75,7 +79,6 @@ func tagCharactersInTextFile(filename string, characterCount map[string]int) {
 	for _, character := range sortedCharacters {
 
 		taggedCharacter := characterClassName(character)
-
 		r, _ := regexp.Compile(nonLetter + character + nonLetter)
 		indexes := r.FindAllIndex(filecontents, -1)
 		if indexes != nil {
