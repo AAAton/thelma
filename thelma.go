@@ -35,6 +35,7 @@ func main() {
 	characterCount := findFullCharacterNames(conllFile)
 
 	characters := structs.CreateCharacterListFromMap(characterCount)
+	characters = qsort.SortByCount(characters)
 	characters.Print("output/characters/" + getStoryName() + ".html")
 	characters = qsort.QuickSort(characters)
 

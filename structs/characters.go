@@ -99,6 +99,7 @@ func (characters Characters) clean() Characters {
 	return characters
 }
 
+//Print ...
 func (characters Characters) Print(filename string) {
 	var html string
 	mainAliases := characters.getMainAliases()
