@@ -7,6 +7,8 @@ import (
 	"os"
 	"os/exec"
 	"strings"
+	"thelma/qsort"
+	"thelma/structs"
 )
 
 var filename, conllFile string
@@ -32,12 +34,11 @@ func main() {
 
 	characterCount := findFullCharacterNames(conllFile)
 
-	characters := createCharacterListFromMap(characterCount)
-	characters.linkAliases()
-	characters.clean()
-	characters.print("output/characters/" + getStoryName() + ".html")
+	characters := structs.CreateCharacterListFromMap(characterCount)
+	characters.Print("output/characters/" + getStoryName() + ".html")
+	characters = qsort.QuickSort(characters)
 
-	//tagCharactersInTextFile(filename, characterCount)
+	tagCharactersInTextFile(filename, characters)
 
 }
 

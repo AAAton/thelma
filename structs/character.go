@@ -1,4 +1,4 @@
-package main
+package structs
 
 import (
 	"regexp"
@@ -12,7 +12,16 @@ type Character struct {
 	Name      string
 	Count     int
 	LinkedIDs []int
+	ChainID   int
 	regex     *regexp.Regexp
+}
+
+//NewCharacter is a constructor Contructor
+func NewCharacter(id int, name string, count int) Character {
+	nonLetter := "\\P{L}"
+	r, _ := regexp.Compile("(?i)" + nonLetter + name + nonLetter)
+	c := Character{id, name, count, []int{}, -1, r}
+	return c
 }
 
 func (c Character) toString() string {
@@ -25,11 +34,20 @@ func (c Character) toHTML() string {
 	for _, id := range c.LinkedIDs {
 		classes += " char" + strconv.Itoa(id)
 	}
-	return "<span class=\"" + classes + "\">" + c.Name + "</span>"
+	return "<span id=\"char" + strconv.Itoa(c.ID) + "\" class=\"" + classes + "\" count=\"" + strconv.Itoa(c.Count) + "\">" + c.Name + "</span>"
+}
+
+//ToTag creates a simple tag to put in text
+func (c Character) ToTag() string {
+	return "<span class=\"char" + strconv.Itoa(c.ID) + "\">" + c.Name + "</span>"
 }
 
 func (c Character) equals(c2 Character) bool {
 	return c.ID == c2.ID
+}
+
+func areLinked(c, c2 Character) bool {
+	return c.isLinkedTo(c2) && c2.isLinkedTo(c)
 }
 
 func (c Character) isLinkedTo(c2 Character) bool {
@@ -43,12 +61,12 @@ func (c Character) isLinkedTo(c2 Character) bool {
 			return true
 		}
 	}
-	for _, id := range c2.LinkedIDs {
-		if c.ID == id {
-			return true
-		}
-	}
+
 	return false
+}
+
+func (c *Character) linkTo(c2 *Character) {
+	c.LinkedIDs = append(c.LinkedIDs, c2.ID)
 }
 
 func link(c, c2 *Character) {
@@ -69,23 +87,31 @@ func (c Character) isSimilarTo(c2 Character) bool {
 	}
 
 	//One name is possesive form of the other
-	if strings.HasSuffix(c.Name, "s") && c.Name[:len(c.Name)-2] == c2.Name {
+	if strings.HasSuffix(c.Name, "s") && c.Name[:len(c.Name)-1] == c2.Name {
 		return true
 	}
 
 	return false
 }
 
-func (c Character) propegateLink(characters Characters, originalChar *Character) {
+func (c *Character) propegateLink(characters Characters, originalChar *Character) {
 
-	if !c.isLinkedTo(*originalChar) {
-		link(&c, originalChar)
+	c.setChainID(originalChar.ChainID)
+
+	if !originalChar.isLinkedTo(*c) {
+		originalChar.linkTo(c)
 	}
 
 	for _, ID := range c.LinkedIDs {
 		linkedChar := characters.get(ID)
-		if !linkedChar.isLinkedTo(*originalChar) {
+		if linkedChar != nil && !originalChar.isLinkedTo(*linkedChar) {
 			linkedChar.propegateLink(characters, originalChar)
 		}
+	}
+}
+
+func (c *Character) setChainID(id int) {
+	if c.ChainID < 0 {
+		c.ChainID = id
 	}
 }

@@ -1,38 +1,40 @@
 package qsort
 
-import "math/rand"
+import (
+	"math/rand"
+	"thelma/structs"
+)
 
 //QuickSort is function
-func QuickSort(slice []string) []string {
-	length := len(slice)
+func QuickSort(characters structs.Characters) structs.Characters {
+
+	length := len(characters.List)
 
 	if length <= 1 {
-		sliceCopy := make([]string, length)
-		copy(sliceCopy, slice)
-		return sliceCopy
+		return characters
 	}
 
-	m := slice[rand.Intn(length)]
+	m := characters.List[rand.Intn(length)]
 
-	less := make([]string, 0, length)
-	middle := make([]string, 0, length)
-	more := make([]string, 0, length)
+	var less structs.Characters
+	var middle structs.Characters
+	var more structs.Characters
 
-	for _, item := range slice {
+	for _, c := range characters.List {
 		switch {
-		case len(item) > len(m):
-			less = append(less, item)
-		case len(item) == len(m):
-			middle = append(middle, item)
-		case len(item) < len(m):
-			more = append(more, item)
+		case len(c.Name) > len(m.Name):
+			less.List = append(less.List, c)
+		case len(c.Name) == len(m.Name):
+			middle.List = append(middle.List, c)
+		case len(c.Name) < len(m.Name):
+			more.List = append(more.List, c)
 		}
 	}
 
 	less, more = QuickSort(less), QuickSort(more)
 
-	less = append(less, middle...)
-	less = append(less, more...)
+	less.List = append(less.List, middle.List...)
+	less.List = append(less.List, more.List...)
 
 	return less
 }

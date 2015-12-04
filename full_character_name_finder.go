@@ -24,7 +24,7 @@ func findFullCharacterNames(filename string) map[string]int {
 	for _, row := range rows {
 		if strings.Contains(row, "person") {
 			vals := strings.Split(row, "\t")
-			characterName += vals[2] + " "
+			characterName += vals[1] + " "
 		} else if characterName != "" {
 			personMap[strings.Trim(characterName, " ")]++
 			characterName = ""
