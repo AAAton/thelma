@@ -13,7 +13,7 @@ func retagPersonsInConll(conllFile string, characterCount map[string]int) {
 	fmt.Println("retagging persons")
 
 	characters = characterCount
-	dat, err := ioutil.ReadFile(filename)
+	dat, err := ioutil.ReadFile(conllFile)
 	if err != nil {
 		fmt.Println(err)
 	}
