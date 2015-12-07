@@ -30,6 +30,8 @@ func main() {
 	if conllFile == "" {
 		conllFile = tagWithStagger(filename)
 		namedEntityImprover(conllFile)
+		characterCount := findFullCharacterNames(conllFile)
+		retagPersonsInConll(conllFile, characterCount)
 	}
 
 	characterCount := findFullCharacterNames(conllFile)
@@ -63,7 +65,7 @@ func tagWithStagger(filename string) string {
 func cleanUpSymbols(originalFile string) string {
 	//TODO clean up symbols
 	file, _ := ioutil.ReadFile(originalFile)
-	var text string = string(file)
+	text := string(file)
 	text = strings.Replace(text, "»", "\"", -1)
 	ioutil.WriteFile(originalFile, []byte(text), 0777)
 	return originalFile

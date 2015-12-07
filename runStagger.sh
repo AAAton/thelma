@@ -1,1 +1,1 @@
-java -jar stagger.jar -modelfile models/swedish.bin -tag literature/en_herrgardssagen.txt > output/conll//en_herrgardssagen.conll
+java -jar stagger.jar -modelfile models/swedish.bin -tag literature/jerusalem.txt > output/conll//jerusalem.conll
