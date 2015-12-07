@@ -21,9 +21,10 @@ func retagPersonsInConll(conllFile string, characterCount map[string]int) {
 	rows := strings.Split(data, "\n")
 
 	for index, row := range rows {
+
 		words := strings.Split(row, "\t")
 
-		if isInList(rows, index) {
+		if len(words) > 1 && isInList(rows, index) {
 			if words[11] != "person" {
 				words[11] = "person"
 				row = ""
@@ -80,5 +81,8 @@ func isInList(rows []string, index int) bool {
 
 func getWordFromRow(row string) string {
 	words := strings.Split(row, "\t")
-	return words[1]
+	if len(words) > 1 {
+		return words[1]
+	}
+	return ""
 }
